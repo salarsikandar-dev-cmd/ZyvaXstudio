@@ -1,0 +1,874 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZyvaX Screenshot Studio V3</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+:root{
+ --purple:#7b2cff;
+ --pink:#ff3eb5;
+ --ink:#202039;
+ --muted:#85859a;
+ --line:#eceaf3;
+}
+*{box-sizing:border-box}
+body{
+ margin:0;background:#f7f6fb;color:var(--ink);
+ font-family:Inter,Arial,sans-serif;
+}
+header{
+ height:72px;background:#fff;border-bottom:1px solid var(--line);
+ display:flex;align-items:center;justify-content:space-between;padding:0 5%;
+}
+.logo{font-size:22px;font-weight:900;letter-spacing:-1px}
+.logo span{
+ background:linear-gradient(110deg,var(--purple),var(--pink));
+ background-clip:text;color:transparent;
+}
+.header-tag{color:var(--muted);font-size:11px;font-weight:700;letter-spacing:1.5px}
+main{max-width:1250px;margin:auto;padding:35px 20px 60px}
+.heading{margin-bottom:28px}
+.heading h1{font-size:clamp(25px,4vw,36px);letter-spacing:-1.5px;margin:0 0 9px}
+.heading p{color:var(--muted);font-size:14px;line-height:1.7;margin:0}
+.workspace{
+ display:grid;grid-template-columns:minmax(0,1fr) 390px;
+ gap:25px;align-items:start;
+}
+.preview-panel,.controls{
+ background:white;border:1px solid var(--line);border-radius:19px;padding:20px;
+}
+.panel-title{font-size:12px;font-weight:800;letter-spacing:1.1px;margin-bottom:17px}
+.preview-area{
+ background:#f4f2f9;border-radius:13px;padding:16px;
+ display:flex;justify-content:center;align-items:flex-start;
+ max-height:850px;overflow:auto;
+}
+#preview{
+ display:block;width:min(100%,380px);height:auto;
+ background:white;box-shadow:0 12px 40px #25203c18;
+ border-radius:5px;flex-shrink:0;
+}
+.controls{display:flex;flex-direction:column;gap:17px}
+.field label.main-label{
+ display:block;font-size:12px;font-weight:700;margin-bottom:9px;
+}
+.upload{
+ border:1.5px dashed #c9b4f7;border-radius:13px;
+ background:#faf8ff;padding:21px 12px;text-align:center;
+ cursor:pointer;display:block;transition:.2s;
+}
+.upload:hover,.upload.drag{background:#f2eaff;border-color:var(--purple)}
+.upload strong{display:block;font-size:13px;overflow-wrap:anywhere}
+.upload small{color:var(--muted);font-size:11px}
+.upload-icon{
+ width:40px;height:40px;border-radius:12px;margin:0 auto 10px;
+ display:grid;place-items:center;color:var(--purple);
+ background:#eee5ff;font-size:21px;
+}
+input[type=file]{display:none}
+select,input[type=text],input[type=number],textarea{
+ width:100%;padding:12px;border:1px solid var(--line);
+ border-radius:9px;background:white;color:var(--ink);
+ font:inherit;font-size:12px;outline:none;
+}
+select:focus,input:focus,textarea:focus{border-color:var(--purple)}
+textarea{resize:vertical;min-height:115px;line-height:1.6}
+.toggle{
+ display:flex;justify-content:space-between;align-items:center;
+ font-size:12px;font-weight:600;gap:12px;
+}
+.toggle input{accent-color:var(--purple);width:17px;height:17px}
+.hint{font-size:10px;color:var(--muted);line-height:1.6;margin-top:7px}
+hr{border:0;border-top:1px solid var(--line);width:100%}
+.range-group{margin-top:12px}
+.range-row{
+ display:flex;align-items:center;justify-content:space-between;
+ font-size:11px;font-weight:600;margin-bottom:7px;
+}
+.range-row output{color:var(--purple);font-weight:800}
+input[type=range]{width:100%;accent-color:var(--purple);cursor:pointer}
+.section-label{
+ font-size:10px;font-weight:800;color:var(--purple);
+ letter-spacing:1px;margin-bottom:3px;
+}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.custom-fields{display:none;gap:10px;margin-top:12px}
+.custom-fields.show{display:grid;grid-template-columns:1fr 1fr}
+.word-count{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-top:6px}
+.word-count strong{color:var(--purple)}
+button{
+ border:0;cursor:pointer;font-family:inherit;font-weight:700;border-radius:10px;
+}
+.download{
+ padding:15px;color:white;font-size:13px;
+ background:linear-gradient(105deg,var(--purple),var(--pink));
+ box-shadow:0 7px 20px #a54bdf30;
+}
+.download:disabled{opacity:.4;cursor:not-allowed;box-shadow:none}
+.reset{background:#f3f1f8;color:#68647b;padding:12px;font-size:12px}
+.status{font-size:11px;color:var(--muted);text-align:center;min-height:15px;line-height:1.5}
+.enhance-note{
+ background:#f7f3ff;border-radius:9px;padding:10px;
+ font-size:10px;color:#77658f;line-height:1.6;
+}
+footer{text-align:center;padding:25px;color:#aaa5b6;font-size:10px;letter-spacing:1px}
+@media(max-width:850px){
+ .workspace{grid-template-columns:1fr}
+ .controls{order:-1}
+ main{padding:25px 13px 40px}
+ header{padding:0 16px}
+}
+</style>
+</head>
+<body>
+
+<header>
+ <div class="logo">ZyvaX<span>.</span></div>
+ <div class="header-tag">SCREENSHOT STUDIO · V3</div>
+</header>
+
+<main>
+ <div class="heading">
+  <h1>Your results. Your identity.</h1>
+  <p>Customize, enhance and export branded performance screenshots.</p>
+ </div>
+
+ <div class="workspace">
+
+  <section class="preview-panel">
+   <div class="panel-title">LIVE PREVIEW · <span id="dimensionLabel">1080 × 1920</span></div>
+   <div class="preview-area">
+    <canvas id="preview" width="1080" height="1920"></canvas>
+   </div>
+  </section>
+
+  <aside class="controls">
+
+   <div class="panel-title">CUSTOMIZE YOUR POST</div>
+
+   <div class="field">
+    <label class="main-label">01 / Upload screenshot</label>
+    <label class="upload" id="dropzone" for="file">
+     <div class="upload-icon">↑</div>
+     <strong id="uploadText">Click to upload screenshot</strong>
+     <small>PNG, JPG or WEBP</small>
+    </label>
+    <input type="file" id="file" accept="image/png,image/jpeg,image/webp">
+   </div>
+
+   <hr>
+
+   <div class="section-label">02 / EXPORT DIMENSIONS</div>
+   <div class="field">
+    <label class="main-label">Choose post format</label>
+    <select id="size">
+     <option value="vertical">9:16 — Instagram Stories / Reels · 1080 × 1920</option>
+     <option value="square">1:1 — Facebook / Instagram · 1080 × 1080</option>
+     <option value="custom">Custom dimensions</option>
+    </select>
+
+    <div class="custom-fields" id="customFields">
+     <div>
+      <label class="main-label">Width (px)</label>
+      <input type="number" id="customWidth" min="200" max="4000" value="1080">
+     </div>
+     <div>
+      <label class="main-label">Height (px)</label>
+      <input type="number" id="customHeight" min="200" max="4000" value="1350">
+     </div>
+    </div>
+    <div class="hint">Custom dimensions: 200–4000 pixels per side.</div>
+   </div>
+
+   <hr>
+
+   <div class="section-label">03 / IMAGE POSITION & CROP</div>
+
+   <div class="field">
+    <label class="main-label">Image fit</label>
+    <select id="fit">
+     <option value="contain">Fit — Full screenshot visible</option>
+     <option value="cover">Crop — Fill frame</option>
+    </select>
+   </div>
+
+   <div class="range-group">
+    <div class="range-row"><label>Zoom</label><output id="zoomValue">100%</output></div>
+    <input type="range" id="zoom" min="50" max="250" value="100">
+   </div>
+
+   <div class="range-group">
+    <div class="range-row"><label>Horizontal position</label><output id="horizontalValue">0</output></div>
+    <input type="range" id="horizontal" min="-100" max="100" value="0">
+   </div>
+
+   <div class="range-group">
+    <div class="range-row"><label>Vertical position</label><output id="verticalValue">0</output></div>
+    <input type="range" id="vertical" min="-100" max="100" value="0">
+   </div>
+
+   <button class="reset" id="resetImage">Reset image position</button>
+
+   <hr>
+
+   <div class="section-label">04 / LOCAL HD ENHANCEMENT</div>
+
+   <div class="toggle">
+    <span>Enable image enhancement</span>
+    <input type="checkbox" id="enhance">
+   </div>
+
+   <div class="range-group">
+    <div class="range-row"><label>Sharpness</label><output id="sharpValue">0</output></div>
+    <input type="range" id="sharp" min="0" max="100" value="0">
+   </div>
+
+   <div class="range-group">
+    <div class="range-row"><label>Clarity</label><output id="clarityValue">0</output></div>
+    <input type="range" id="clarity" min="0" max="100" value="0">
+   </div>
+
+   <div class="range-group">
+    <div class="range-row"><label>Contrast</label><output id="contrastValue">100%</output></div>
+    <input type="range" id="contrast" min="70" max="140" value="100">
+   </div>
+
+   <div class="range-group">
+    <div class="range-row"><label>Brightness</label><output id="brightnessValue">100%</output></div>
+    <input type="range" id="brightness" min="70" max="140" value="100">
+   </div>
+
+   <div class="enhance-note">
+    Local enhancement uses browser image processing. It improves sharpness and tonal appearance, but does not reconstruct missing details like a dedicated AI upscaler.
+   </div>
+
+   <hr>
+
+   <div class="section-label">05 / WATERMARK PROTECTION</div>
+
+   <div class="toggle">
+    <span>Enable screenshot watermark</span>
+    <input type="checkbox" id="contentWatermark" checked>
+   </div>
+
+   <div class="field">
+    <label class="main-label">Watermark text</label>
+    <input type="text" id="watermarkText" value="ZYVAX DIGITAL" maxlength="30">
+   </div>
+
+   <div class="range-group">
+    <div class="range-row"><label>Watermark opacity</label><output id="opacityValue">9%</output></div>
+    <input type="range" id="opacity" min="2" max="25" value="9">
+   </div>
+
+   <div class="range-group">
+    <div class="range-row"><label>Watermark size</label><output id="watermarkSizeValue">Medium</output></div>
+    <input type="range" id="watermarkSize" min="20" max="90" value="48">
+   </div>
+
+   <div class="hint">The watermark is embedded across the screenshot itself, not just the outer frame. It discourages reuse but cannot prevent determined cropping or removal.</div>
+
+   <hr>
+
+   <div class="section-label">06 / BRAND DESIGN</div>
+
+   <div class="field">
+    <label class="main-label">Frame style</label>
+    <select id="frame">
+     <option value="gradient">ZyvaX Gradient — Violet / Pink</option>
+     <option value="violet">Digital Violet</option>
+     <option value="minimal">Minimal White</option>
+    </select>
+   </div>
+
+   <div class="field">
+    <label class="main-label">Background</label>
+    <select id="background">
+     <option value="white">Pure White</option>
+     <option value="soft">Soft Lavender</option>
+     <option value="light">Cool Off-White</option>
+    </select>
+   </div>
+
+   <div class="field">
+    <label class="main-label">Brand signature</label>
+    <input type="text" id="brand" value="ZyvaX" maxlength="24">
+   </div>
+
+   <div class="toggle">
+    <span>Subtle footer watermark</span>
+    <input type="checkbox" id="footerWatermark" checked>
+   </div>
+
+   <hr>
+
+   <div class="section-label">07 / OPTIONAL DESCRIPTION</div>
+
+   <div class="field">
+    <label class="main-label">Custom text below screenshot</label>
+    <textarea id="description" placeholder="Write your campaign details, sales achievements or performance notes..." maxlength="5000"></textarea>
+    <div class="word-count">
+     <span>Optional · Maximum 300 words</span>
+     <strong id="wordCount">0 / 300</strong>
+    </div>
+    <div class="hint">Leave blank to completely hide this section from your export.</div>
+   </div>
+
+   <hr>
+
+   <button class="download" id="download" disabled>↓ &nbsp; Download PNG</button>
+   <button class="reset" id="reset">Reset entire template</button>
+   <div class="status" id="status">Upload a screenshot to get started.</div>
+
+  </aside>
+ </div>
+</main>
+
+<footer>ZYVAX DIGITAL · PERFORMANCE STUDIO</footer>
+
+<script>
+const $ = id => document.getElementById(id);
+const canvas = $('preview');
+const ctx = canvas.getContext('2d');
+
+let uploadedImage = null;
+let fileName = 'zyvax-performance';
+let enhancedCanvas = null;
+let enhanceTimer = null;
+
+const backgrounds = {
+ white:'#ffffff',
+ soft:'#f8f5ff',
+ light:'#f5f7fc'
+};
+
+function countWords(s){
+ return s.trim() ? s.trim().split(/\s+/).length : 0;
+}
+
+function getDescription(){
+ return $('description').value.trim();
+}
+
+function getDimensions(){
+ const type = $('size').value;
+ if(type === 'square') return {w:1080,h:1080};
+ if(type === 'vertical') return {w:1080,h:1920};
+
+ return {
+  w:Math.min(4000,Math.max(200,Number($('customWidth').value)||1080)),
+  h:Math.min(4000,Math.max(200,Number($('customHeight').value)||1350))
+ };
+}
+
+function gradient(x,y,w,h){
+ const g=ctx.createLinearGradient(x,y,x+w,y+h);
+ g.addColorStop(0,'#7b2cff');
+ g.addColorStop(1,'#ff3eb5');
+ return g;
+}
+
+function roundedRect(c,x,y,w,h,r){
+ c.beginPath();
+ c.roundRect(x,y,w,h,r);
+}
+
+function wrapText(text,x,y,maxWidth,lineHeight,font,maxLines){
+ ctx.font=font;
+ const words=text.split(/\s+/);
+ const lines=[];
+ let line='';
+
+ for(const word of words){
+  const test=line ? line+' '+word : word;
+  if(ctx.measureText(test).width>maxWidth && line){
+   lines.push(line);
+   line=word;
+  }else{
+   line=test;
+  }
+ }
+ if(line)lines.push(line);
+
+ const visible=lines.slice(0,maxLines);
+ visible.forEach((l,i)=>ctx.fillText(l,x,y+i*lineHeight));
+ return visible.length;
+}
+
+// Local image enhancement via convolution and tonal adjustments.
+function enhanceImage(){
+ if(!uploadedImage)return;
+
+ if(!$('enhance').checked){
+  enhancedCanvas=null;
+  draw();
+  return;
+ }
+
+ const w=uploadedImage.naturalWidth;
+ const h=uploadedImage.naturalHeight;
+
+ if(w*h>12000000){
+  $('status').textContent='Image is large. Processing may take a moment.';
+ }
+
+ const temp=document.createElement('canvas');
+ temp.width=w;
+ temp.height=h;
+
+ const tctx=temp.getContext('2d',{willReadFrequently:true});
+ tctx.drawImage(uploadedImage,0,0,w,h);
+
+ const imageData=tctx.getImageData(0,0,w,h);
+ const data=imageData.data;
+
+ const sharp=Number($('sharp').value)/100;
+ const clarity=Number($('clarity').value)/100;
+ const contrast=Number($('contrast').value)/100;
+ const brightness=Number($('brightness').value)/100;
+
+ const original=new Uint8ClampedArray(data);
+ const sharpenAmount=sharp*0.65;
+ const clarityAmount=clarity*0.25;
+
+ function lum(i){
+  return 0.299*original[i]+0.587*original[i+1]+0.114*original[i+2];
+ }
+
+ for(let y=1;y<h-1;y++){
+  for(let x=1;x<w-1;x++){
+   const i=(y*w+x)*4;
+
+   const top=i-w*4;
+   const bottom=i+w*4;
+   const left=i-4;
+   const right=i+4;
+
+   const edge=lum(i)*4-lum(top)-lum(bottom)-lum(left)-lum(right);
+
+   const centerLum=lum(i);
+   const localLum=(lum(top)+lum(bottom)+lum(left)+lum(right))/4;
+   const localContrast=centerLum-localLum;
+
+   for(let c=0;c<3;c++){
+    const originalValue=original[i+c];
+    const sharpened=originalValue+edge*sharpenAmount;
+    const clarified=sharpened+localContrast*clarityAmount;
+
+    let value=clarified;
+    value=(value-128)*contrast+128;
+    value*=brightness;
+
+    data[i+c]=value;
+   }
+  }
+ }
+
+ tctx.putImageData(imageData,0,0);
+
+ enhancedCanvas=temp;
+ $('status').textContent='Local image enhancement applied.';
+ draw();
+}
+
+function scheduleEnhancement(){
+ clearTimeout(enhanceTimer);
+ enhanceTimer=setTimeout(enhanceImage,100);
+}
+
+function drawScreenshot(img,x,y,w,h){
+ const fit=$('fit').value;
+ const zoom=Number($('zoom').value)/100;
+ const horizontal=Number($('horizontal').value)/100;
+ const vertical=Number($('vertical').value)/100;
+
+ const scale=(fit==='cover'
+  ?Math.max(w/img.width,h/img.height)
+  :Math.min(w/img.width,h/img.height))*zoom;
+
+ const sw=img.width*scale;
+ const sh=img.height*scale;
+
+ const maxX=Math.max(0,(sw-w)/2);
+ const maxY=Math.max(0,(sh-h)/2);
+
+ const sx=x+(w-sw)/2+horizontal*maxX;
+ const sy=y+(h-sh)/2+vertical*maxY;
+
+ ctx.save();
+ roundedRect(ctx,x,y,w,h,14);
+ ctx.clip();
+ ctx.fillStyle='#fff';
+ ctx.fillRect(x,y,w,h);
+ ctx.drawImage(img,sx,sy,sw,sh);
+ ctx.restore();
+}
+
+function drawContentWatermark(x,y,w,h){
+ if(!$('contentWatermark').checked)return;
+
+ const text=$('watermarkText').value.trim()||'ZYVAX DIGITAL';
+ const opacity=Number($('opacity').value)/100;
+ const fontSize=Number($('watermarkSize').value);
+
+ ctx.save();
+ ctx.beginPath();
+ ctx.rect(x,y,w,h);
+ ctx.clip();
+
+ ctx.translate(x+w/2,y+h/2);
+ ctx.rotate(-Math.PI/5);
+
+ ctx.font=`900 ${fontSize}px Inter, Arial`;
+ ctx.textAlign='center';
+ ctx.textBaseline='middle';
+
+ // Repeated diagonal watermarks across the screenshot.
+ const textWidth=ctx.measureText(text).width;
+ const stepX=Math.max(270,textWidth+230);
+ const stepY=Math.max(170,fontSize*4.2);
+
+ ctx.fillStyle=`rgba(123,44,255,${opacity})`;
+
+ for(let row=-8;row<=8;row++){
+  for(let col=-8;col<=8;col++){
+   ctx.fillText(text,col*stepX+(row%2)*stepX/2,row*stepY);
+  }
+ }
+
+ ctx.restore();
+}
+
+function draw(){
+ const {w,h}=getDimensions();
+ const description=getDescription();
+ const hasDescription=description.length>0;
+ const brand=$('brand').value.trim()||'ZyvaX';
+ const frame=$('frame').value;
+
+ canvas.width=w;
+ canvas.height=h;
+
+ const scale=Math.min(w/1080,h/1920);
+ const s=v=>v*scale;
+
+ ctx.fillStyle=backgrounds[$('background').value];
+ ctx.fillRect(0,0,w,h);
+
+ // Decorative glow
+ const glow=ctx.createRadialGradient(w*.88,h*.08,0,w*.88,h*.08,s(500));
+ glow.addColorStop(0,'#eedfff');
+ glow.addColorStop(1,'#ffffff00');
+ ctx.fillStyle=glow;
+ ctx.fillRect(0,0,w,h*.45);
+
+ const horizontalMargin=s(76);
+ const availableWidth=w-horizontalMargin*2;
+
+ // Header
+ ctx.textAlign='left';
+ ctx.fillStyle='#202039';
+ ctx.font=`900 ${s(55)}px Inter, Arial`;
+ ctx.fillText(brand,horizontalMargin,s(130));
+
+ const dotX=horizontalMargin+ctx.measureText(brand).width+s(7);
+ ctx.fillStyle='#ff3eb5';
+ ctx.beginPath();
+ ctx.arc(dotX,s(111),s(7),0,Math.PI*2);
+ ctx.fill();
+
+ ctx.textAlign='right';
+ ctx.fillStyle='#9993a8';
+ ctx.font=`700 ${s(20)}px Inter, Arial`;
+ ctx.fillText('PERFORMANCE PROOF',w-horizontalMargin,s(119));
+
+ ctx.fillStyle=gradient(horizontalMargin,s(178),availableWidth,s(5));
+ roundedRect(ctx,horizontalMargin,s(178),availableWidth,s(5),s(4));
+ ctx.fill();
+
+ // Main content geometry changes with format.
+ const descriptionHeight=hasDescription?s(310):0;
+ const top=hasDescription?s(250):s(310);
+ const footerSpace=s(260);
+ const bottom=s(1920)-footerSpace-descriptionHeight;
+ const frameX=s(63);
+ const frameY=top;
+ const frameW=w-s(126);
+ const frameH=Math.max(s(300),bottom-frameY);
+ const border=frame==='minimal'?s(4):s(9);
+
+ // Shadow
+ ctx.save();
+ ctx.shadowColor='#29203d24';
+ ctx.shadowBlur=s(38);
+ ctx.shadowOffsetY=s(16);
+ ctx.fillStyle='#fff';
+ roundedRect(ctx,frameX,frameY,frameW,frameH,s(27));
+ ctx.fill();
+ ctx.restore();
+
+ // Border
+ ctx.strokeStyle=frame==='gradient'
+  ?gradient(frameX,frameY,frameW,frameH)
+  :frame==='violet'?'#7b2cff':'#e8e5ef';
+
+ ctx.lineWidth=border;
+ roundedRect(ctx,frameX,frameY,frameW,frameH,s(27));
+ ctx.stroke();
+
+ const pad=s(22);
+ const ix=frameX+pad;
+ const iy=frameY+pad;
+ const iw=frameW-pad*2;
+ const ih=frameH-pad*2;
+
+ const imageToDraw=enhancedCanvas||uploadedImage;
+
+ if(imageToDraw){
+  drawScreenshot(imageToDraw,ix,iy,iw,ih);
+  // Watermark is composited over the screenshot, not the surrounding frame.
+  drawContentWatermark(ix,iy,iw,ih);
+ }else{
+  ctx.fillStyle='#f8f6fc';
+  roundedRect(ctx,ix,iy,iw,ih,s(16));
+  ctx.fill();
+  ctx.textAlign='center';
+  ctx.fillStyle='#7b2cff';
+  ctx.font=`700 ${s(34)}px Inter, Arial`;
+  ctx.fillText('YOUR SCREENSHOT',w/2,h/2);
+  ctx.fillStyle='#9993a8';
+  ctx.font=`${s(22)}px Inter, Arial`;
+  ctx.fillText('Upload a dashboard to preview',w/2,h/2+s(48));
+ }
+
+ // Optional description
+ if(hasDescription){
+  const bx=horizontalMargin;
+  const by=frameY+frameH+s(28);
+  const bw=availableWidth;
+  const bh=descriptionHeight-s(15);
+
+  ctx.fillStyle='rgba(255,255,255,.96)';
+  ctx.strokeStyle='#e9e1f6';
+  ctx.lineWidth=s(2);
+  roundedRect(ctx,bx,by,bw,bh,s(18));
+  ctx.fill();
+  ctx.stroke();
+
+  ctx.textAlign='left';
+  ctx.fillStyle='#7b2cff';
+  ctx.font=`800 ${s(17)}px Inter, Arial`;
+  ctx.fillText('PERFORMANCE NOTES',bx+s(28),by+s(42));
+
+  ctx.fillStyle='#ff3eb5';
+  roundedRect(ctx,bx+s(28),by+s(57),s(75),s(4),s(3));
+  ctx.fill();
+
+  const fontSize=s(20);
+  const lineHeight=s(29);
+  const maxLines=Math.max(1,Math.floor((bh-s(105))/lineHeight));
+
+  ctx.fillStyle='#49445a';
+  wrapText(
+   description,
+   bx+s(28),
+   by+s(103),
+   bw-s(56),
+   lineHeight,
+   `${fontSize}px Inter, Arial`,
+   maxLines
+  );
+ }
+
+ // Footer
+ if($('footerWatermark').checked){
+  ctx.textAlign='right';
+  ctx.fillStyle='rgba(123,44,255,.12)';
+  ctx.font=`900 ${s(52)}px Inter, Arial`;
+  ctx.fillText(brand,w-horizontalMargin,h-s(120));
+ }
+
+ ctx.textAlign='left';
+ ctx.fillStyle='#b0aabd';
+ ctx.font=`500 ${s(17)}px Inter, Arial`;
+ ctx.fillText('ZYVAX DIGITAL',horizontalMargin,h-s(110));
+
+ ctx.textAlign='right';
+ ctx.fillText('RESULTS. BUILT WITH PURPOSE.',w-horizontalMargin,h-s(70));
+
+ $('dimensionLabel').textContent=`${w} × ${h}`;
+ $('zoomValue').textContent=$('zoom').value+'%';
+ $('horizontalValue').textContent=$('horizontal').value;
+ $('verticalValue').textContent=$('vertical').value;
+ $('opacityValue').textContent=$('opacity').value+'%';
+ $('watermarkSizeValue').textContent=$('watermarkSize').value;
+ $('sharpValue').textContent=$('sharp').value;
+ $('clarityValue').textContent=$('clarity').value;
+ $('contrastValue').textContent=$('contrast').value+'%';
+ $('brightnessValue').textContent=$('brightness').value+'%';
+ $('wordCount').textContent=countWords(description)+' / 300';
+}
+
+function loadFile(file){
+ if(!file)return;
+
+ if(!['image/png','image/jpeg','image/webp'].includes(file.type)){
+  $('status').textContent='Please upload PNG, JPG or WEBP.';
+  return;
+ }
+
+ const reader=new FileReader();
+ reader.onload=e=>{
+  const img=new Image();
+  img.onload=()=>{
+   uploadedImage=img;
+   enhancedCanvas=null;
+   fileName=file.name.replace(/\.[^/.]+$/,'').replace(/[^a-z0-9-_]/gi,'-');
+   $('uploadText').textContent=file.name;
+   $('download').disabled=false;
+   $('status').textContent='Screenshot uploaded successfully.';
+   draw();
+   if($('enhance').checked)scheduleEnhancement();
+  };
+  img.onerror=()=>{$('status').textContent='Could not load this image.'};
+  img.src=e.target.result;
+ };
+ reader.readAsDataURL(file);
+}
+
+$('file').addEventListener('change',e=>loadFile(e.target.files[0]));
+
+$('dropzone').addEventListener('dragover',e=>{
+ e.preventDefault();
+ $('dropzone').classList.add('drag');
+});
+$('dropzone').addEventListener('dragleave',()=>{
+ $('dropzone').classList.remove('drag');
+});
+$('dropzone').addEventListener('drop',e=>{
+ e.preventDefault();
+ $('dropzone').classList.remove('drag');
+ loadFile(e.dataTransfer.files[0]);
+});
+
+// Export format
+$('size').addEventListener('change',()=>{
+ const custom=$('size').value==='custom';
+ $('customFields').classList.toggle('show',custom);
+ draw();
+});
+$('customWidth').addEventListener('input',draw);
+$('customHeight').addEventListener('input',draw);
+
+// Optional text limit
+$('description').addEventListener('input',()=>{
+ const input=$('description');
+ const words=input.value.trim().split(/\s+/);
+ if(input.value.trim()&&words.length>300){
+  input.value=words.slice(0,300).join(' ');
+ }
+ draw();
+});
+
+// Regular controls
+[
+ 'fit','zoom','horizontal','vertical','frame','background',
+ 'brand','watermarkText','contentWatermark','opacity',
+ 'watermarkSize','footerWatermark'
+].forEach(id=>{
+ $(id).addEventListener('input',draw);
+ $(id).addEventListener('change',draw);
+});
+
+// Enhancement controls
+['sharp','clarity','contrast','brightness'].forEach(id=>{
+ $(id).addEventListener('input',()=>{
+  draw();
+  if($('enhance').checked)scheduleEnhancement();
+ });
+});
+
+$('enhance').addEventListener('change',()=>{
+ if($('enhance').checked){
+  scheduleEnhancement();
+ }else{
+  clearTimeout(enhanceTimer);
+  enhancedCanvas=null;
+  $('status').textContent='Original screenshot restored.';
+  draw();
+ }
+});
+
+// Reset position
+$('resetImage').addEventListener('click',()=>{
+ $('zoom').value=100;
+ $('horizontal').value=0;
+ $('vertical').value=0;
+ draw();
+});
+
+// Export PNG
+$('download').addEventListener('click',()=>{
+ if(!uploadedImage)return;
+ draw();
+
+ canvas.toBlob(blob=>{
+  if(!blob){
+   $('status').textContent='Export failed. Try smaller dimensions.';
+   return;
+  }
+
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download=fileName+'-zyvax-'+canvas.width+'x'+canvas.height+'.png';
+  a.click();
+  setTimeout(()=>URL.revokeObjectURL(url),1500);
+
+  $('status').textContent='PNG exported successfully.';
+ },'image/png');
+});
+
+// Full reset
+$('reset').addEventListener('click',()=>{
+ uploadedImage=null;
+ enhancedCanvas=null;
+ clearTimeout(enhanceTimer);
+
+ $('file').value='';
+ $('size').value='vertical';
+ $('customFields').classList.remove('show');
+ $('customWidth').value=1080;
+ $('customHeight').value=1350;
+ $('fit').value='contain';
+ $('zoom').value=100;
+ $('horizontal').value=0;
+ $('vertical').value=0;
+ $('enhance').checked=false;
+ $('sharp').value=0;
+ $('clarity').value=0;
+ $('contrast').value=100;
+ $('brightness').value=100;
+ $('contentWatermark').checked=true;
+ $('watermarkText').value='ZYVAX DIGITAL';
+ $('opacity').value=9;
+ $('watermarkSize').value=48;
+ $('frame').value='gradient';
+ $('background').value='white';
+ $('brand').value='ZyvaX';
+ $('footerWatermark').checked=true;
+ $('description').value='';
+ $('uploadText').textContent='Click to upload screenshot';
+ $('download').disabled=true;
+ $('status').textContent='Template reset. Upload a new screenshot.';
+ draw();
+});
+
+draw();
+</script>
+</body>
+</html>
